@@ -1,0 +1,78 @@
+`timescale 1ns / 1ps
+
+module TB_READD();
+
+reg [10:0] address;
+reg [7:0] data;
+reg mode, clk;
+wire [7:0] output_data;
+wire hit1, hit2;
+
+
+CACHE_CONTROLLER inst(
+	.address(address),
+	.data(data),
+	.mode(mode),
+	.clk(clk),
+	.output_data(output_data),
+	.hit1(hit1),
+	.hit2(hit2)	
+);
+
+initial
+begin
+	clk = 1'b1;
+	
+	address = 11'b10000011101; //Block 3, byte 1
+	data =    8'b00001110; 	 
+	mode = 1'b1; //write	
+
+    #50
+	address = 11'b00000101110;	 //Block 11, byte 2
+	data =    8'b00000001;	 
+	mode = 1'b0; //read	
+
+    #50
+	address = 11'b01100101110;	 // 32e
+	data =    8'b00000110;	 
+	mode = 1'b1; //write	
+	
+    #50
+	address = 11'b10000011111;	 //Block 3, byte 1
+	data =    8'b00000001;	 
+	mode = 1'b0; //read	
+
+    #50
+	address = 11'b01100101110;	 //32e
+	data =    8'b00001111;	 
+	mode = 1'b0; //read	 
+	
+	#50
+	address = 11'b00100101101;   //12d
+	data =    8'b00001000;
+	mode = 1'b1;
+	
+	#50
+	address = 11'b00100101101;  //12d
+	data =    8'b00001000;
+	mode = 1'b0;//read
+	
+	#50
+	address = 11'b01100101110;	 //Block 11, byte 3 32E
+	data =    8'b00001111;	 
+	mode = 1'b0; //read	 
+	
+	#50
+	address = 11'b10100101101; //12D WRITE
+	data =    8'b00001001;
+	mode = 1'b1;
+	
+	#50
+	address = 11'b10100101101; //12D READ
+	data =    8'b00001001;
+	mode = 1'b0;
+	
+end
+
+always #25 clk = ~clk;
+endmodule
